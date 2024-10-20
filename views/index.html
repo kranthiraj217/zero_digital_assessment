@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- <link rel="stylesheet" href="./css/styles.css"> -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
+    <script src="/js/app.js" defer></script>
+</head>
+<body class="bg-gray-100">
+
+    <div class="container mx-auto p-2 md:p-5" x-data="users" x-init="fetchUsers()">
+        <h1 class="text-2xl font-bold mb-4">ERP Dashboard</h1>
+
+        <div class="bg-white shadow-md rounded-lg p-5">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">Users</h2>
+                <a href="add-user.html" class="bg-blue-500 text-white px-4 py-2 rounded">Add User</a>
+            </div>
+
+            <table class="table-auto w-full text-left text-xs sm:text-sm md:text-base">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="px-4 py-2">First Name</th>
+                        <th class="px-4 py-2">Last Name</th>
+                        <th class="px-4 py-2">Email</th>
+                        <th class="px-4 py-2">Mobile</th>
+                        <th class="px-4 py-2">Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be dynamically inserted here by Alpine.js -->
+                    <template x-for="user in users" :key="user.id">
+                        <tr>
+                            <td class="px-4 py-2" x-text="user.firstName"></td>
+                            <td class="px-4 py-2" x-text="user.lastName"></td>
+                            <td class="px-4 py-2" x-text="user.email"></td>
+                            <td class="px-4 py-2" x-text="user.mobile"></td>
+                            <td class="px-4 py-2" x-text="user.role"></td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>

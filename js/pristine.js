@@ -1,0 +1,1 @@
+<script src="./node_modules/pristinejs/dist/pristine.min.js"></script>
