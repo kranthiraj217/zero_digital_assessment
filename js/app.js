@@ -1,20 +1,32 @@
 document.addEventListener("alpine:init", () => {
     Alpine.data("users", () => ({
-        users: [],
-
-        // Fetch users from API when the component is initialized
-        async fetchUsers() {
-            console.log("Fetching users...");
+        users: [], // Initialize users as an empty array
+        
+        // Function to fetch users from the API
+        async loadUsers() {
             try {
                 const response = await fetch("/api/users");
+                if (!response.ok) {
+                    throw new Error("Failed to fetch users from the server");
+                }
+
+                // Parse the response as JSON
                 const data = await response.json();
-                this.users = data.users;
-                console.log("Fetched users: ", this.users);
+
+                // Check if data is structured properly and has users
+                if (Array.isArray(data)) {
+                    this.users = data; // Directly set the users if it's an array
+                } else if (data.users && Array.isArray(data.users)) {
+                    this.users = data.users; // In case data.users is the array
+                } else {
+                    console.error("Unexpected data format:", data);
+                    alert("Failed to load users due to data format issue.");
+                }
             } catch (error) {
-                console.error("Error fetching users", error);
+                console.error("Error loading users:", error);
+                alert("An error occurred while loading users.");
             }
         },
-        
 
         // Add a new user using the API
         async addUser(e) {
@@ -42,7 +54,7 @@ document.addEventListener("alpine:init", () => {
                 });
                 
                 const data = await response.json();
-                console.log("server response: ", data); // to debug the response
+                console.log("Server response: ", data); // to debug the response
                 
                 if (data.success) {
                     alert('Entry has been made successfully'); // Show success message
@@ -56,13 +68,4 @@ document.addEventListener("alpine:init", () => {
             }
         },
     }));
-});
-
-// Fetch users when the dashboard is loaded
-document.addEventListener("DOMContentLoaded", () => {
-    const userComponent = document.querySelector('[x-data]');
-    if (userComponent && userComponent.__x) {
-        // Fetch users on load
-        userComponent.__x.fetchUsers();
-    }
 });

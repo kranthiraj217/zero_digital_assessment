@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ERP Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <!-- <link rel="stylesheet" href="./css/styles.css"> -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
     <script src="/js/app.js" defer></script>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100" x-data="users" x-init="loadUsers()">
 
-    <div class="container mx-auto p-2 md:p-5" x-data="users" x-init="fetchUsers()">
+    <div class="container mx-auto p-2 md:p-5">
         <h1 class="text-2xl font-bold mb-4">ERP Dashboard</h1>
 
         <div class="bg-white shadow-md rounded-lg p-5">
@@ -46,5 +45,37 @@
         </div>
     </div>
 
+    <!-- Alpine.js component initialization -->
+    <script>
+        document.addEventListener("alpine:init", () => {
+            Alpine.data("users", () => ({
+                users: [], // Empty array to hold users data
+
+                // Function to fetch users from the API
+                async loadUsers() {
+                    try {
+                        const response = await fetch("/api/users"); // Fetch users from your backend API
+                        if (!response.ok) {
+                            throw new Error("Failed to fetch users");
+                        }
+
+                        const data = await response.json();
+                        // Check if data is an array of users and assign it to the Alpine.js 'users' variable
+                        if (Array.isArray(data)) {
+                            this.users = data;
+                        } else if (data.users && Array.isArray(data.users)) {
+                            this.users = data.users;
+                        } else {
+                            console.error("Unexpected data format:", data);
+                            alert("Failed to load users due to data format issue.");
+                        }
+                    } catch (error) {
+                        console.error("Error loading users:", error);
+                        alert("An error occurred while loading users.");
+                    }
+                }
+            }));
+        });
+    </script>
 </body>
 </html>

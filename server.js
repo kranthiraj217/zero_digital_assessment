@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 const mysql = require('mysql2');
 require('dotenv').config(); // Load environment variables
 
-
 const app = express();
 
 // Middleware to parse incoming request bodies in JSON format
@@ -14,11 +13,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Serve static files from the 'css' and 'js' directories
 app.use('/css', express.static(path.join(__dirname, 'css')));
-app.use('/js',express.static(path.join(__dirname, 'js')));
+app.use('/js', express.static(path.join(__dirname, 'js')));
 
 // Serve static files (for HTML pages) from the 'views' directory
 app.use(express.static(path.join(__dirname, 'views')));
-
 
 // MySQL connection setup
 const db = mysql.createConnection({
@@ -37,7 +35,6 @@ db.connect((err) => {
     console.log('MySQL Connected...');
 });
 
-
 // Fetch users
 app.get('/api/users', (req, res) => {
     const sql = "SELECT * FROM users";
@@ -49,8 +46,6 @@ app.get('/api/users', (req, res) => {
         res.json({ users: results });
     });
 });
-// Use the modularized user routes for all '/api' requests
-app.use('/api', userRoutes);
 
 // Add user
 app.post('/api/users', (req, res) => {
@@ -66,8 +61,7 @@ app.post('/api/users', (req, res) => {
 });
 
 // Use the modularized user routes for all '/api' requests
-app.use('/api', userRoutes);
-
+app.use('/api', userRoutes); // This should be after the POST handler for users to avoid conflicts
 
 // Serve the index.html on the root route
 app.get('/', (req, res) => {

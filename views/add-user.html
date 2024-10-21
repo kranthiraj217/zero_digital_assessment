@@ -4,38 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add User</title>
+    <!-- Tailwind CSS for styling -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="./css/styles.css">
+    <!-- Alpine.js for event handling -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
+    <!-- Custom JavaScript to handle form submission -->
+    <script src="/js/app.js" defer></script>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100" x-data="addUserForm">
 
     <div class="container mx-auto p-5">
         <h1 class="text-2xl font-bold mb-4">Add New User</h1>
 
-        <form id="userForm" @submit.prevent="addUser"  class="bg-white shadow-md rounded-lg p-5">
+        <form id="userForm" @submit.prevent="addUser" class="bg-white shadow-md rounded-lg p-5">
             <div class="mb-4">
                 <label for="firstName" class="block text-gray-700">First Name</label>
-                <input type="text" id="firstName" class="mt-1 block w-full border-gray-300 rounded-md" required>
+                <input type="text" id="firstName" x-model="firstName" class="mt-1 block w-full border-gray-300 rounded-md" required>
             </div>
 
             <div class="mb-4">
                 <label for="lastName" class="block text-gray-700">Last Name</label>
-                <input type="text" id="lastName" class="mt-1 block w-full border-gray-300 rounded-md" required>
+                <input type="text" id="lastName" x-model="lastName" class="mt-1 block w-full border-gray-300 rounded-md" required>
             </div>
 
             <div class="mb-4">
                 <label for="email" class="block text-gray-700">Email Address</label>
-                <input type="email" id="email" class="mt-1 block w-full border-gray-300 rounded-md" required>
+                <input type="email" id="email" x-model="email" class="mt-1 block w-full border-gray-300 rounded-md" required>
             </div>
 
             <div class="mb-4">
                 <label for="mobile" class="block text-gray-700">Mobile</label>
-                <input type="text" id="mobile" class="mt-1 block w-full border-gray-300 rounded-md" required>
+                <input type="text" id="mobile" x-model="mobile" class="mt-1 block w-full border-gray-300 rounded-md" required>
             </div>
 
             <div class="mb-4">
                 <label for="role" class="block text-gray-700">Role</label>
-                <select id="role" class="mt-1 block w-full border-gray-300 rounded-md" required>
+                <select id="role" x-model="role" class="mt-1 block w-full border-gray-300 rounded-md" required>
                     <option value="" disabled selected>Select Role</option>
                     <option>Admin</option>
                     <option>User</option>
@@ -46,22 +51,44 @@
         </form>
     </div>
 
-    <script defer type="module" src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/pristinejs/dist/pristine.min.js"></script>
-    <script src="/js/app.js" defer></script>
-
-    <!-- Validation using Pristine.js -->
     <script>
-        const form = document.getElementById('userForm');
-        const pristine = new Pristine(form);
+        // Alpine.js data object
+        const addUserForm = () => ({
+            firstName: '',
+            lastName: '',
+            email: '',
+            mobile: '',
+            role: '',
+            async addUser() {
+                const user = {
+                    firstName: this.firstName,
+                    lastName: this.lastName,
+                    email: this.email,
+                    mobile: this.mobile,
+                    role: this.role,
+                };
 
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const valid = pristine.validate();  // Validate the form
-            //if (valid) {
-                // Submit the form if valid
-                //Alpine.store('users').addUser(e);
-            //}
+                try {
+                    const response = await fetch('/api/users', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(user),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const result = await response.json();
+                    alert(result.message);  // Display success message
+                    window.location.href = 'http://localhost:5000';  // Redirect to dashboard
+                } catch (error) {
+                    console.error('Error adding user:', error);
+                    alert('Failed to add user. Please try again.');  // Display error message
+                }
+            }
         });
     </script>
 </body>
